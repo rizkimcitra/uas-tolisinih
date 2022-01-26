@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body::-webkit-scrollbar {
+    @apply md:w-1;
+  }
+  body::-webkit-scrollbar-thumb {
+    @apply md:bg-gradient-to-b md:from-green-500 md:to-emerald-500;
+  }
+  h1 {
+    @apply text-2xl font-bold md:text-4xl text-gray-800 dark:text-gray-200;
+  }
+
+  h2 {
+    @apply text-xl font-bold md:text-3xl text-gray-800 dark:text-gray-200;
+  }
+
+  h3 {
+    @apply text-lg font-bold md:text-xl text-gray-800 dark:text-gray-200;
+  }
+
+  h4 {
+    @apply text-base font-bold md:text-lg text-gray-800 dark:text-gray-200;
+  }
+
+  body {
+    @apply font-primary text-sm md:text-base mt-14 md:mt-24 antialiased bg-neutral-100 dark:bg-neutral-900 text-gray-700 dark:text-gray-300;
+  }
+}
+
+@layer utilities {
+  .layout {
+    @apply w-11/12 max-w-4xl mx-auto;
+  }
+  .custom-ring {
+    @apply outline-none focus-visible:ring focus-visible:ring-offset-4
+   focus-visible:ring-offset-white focus-visible:ring-emerald-500
+    dark:focus-visible:ring-offset-neutral-900 dark:focus-visible:ring-emerald-400;
+  }
+  .accessible {
+    @apply custom-ring transition-all active:scale-95 hover:bg-emerald-500 hover:text-white
+    dark:hover:bg-emerald-900 dark:hover:text-emerald-400;
+  }
+}
