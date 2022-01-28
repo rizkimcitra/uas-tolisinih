@@ -8,7 +8,6 @@ import { AuthActionType } from '@/redux/constant/action'
 import { PayloadAuthReducer } from '@/redux/reducers/authReducer'
 
 import clsx from 'clsx'
-import { setDefaultResultOrder } from 'dns'
 import React, { useState } from 'react'
 import { useCookies } from 'react-cookie'
 import { useDispatch } from 'react-redux'
