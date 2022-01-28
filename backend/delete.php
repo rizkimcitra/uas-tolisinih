@@ -1,7 +1,7 @@
 <?php
-require('../libs/header.php');
-require('../libs/constant.php');
-require('../services/connection.php');
+require('./libs/header.php');
+require('./libs/constant.php');
+require('./services/connection.php');
 header('Access-Control-Allow-Methods: DELETE');
 
 

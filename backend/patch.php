@@ -1,7 +1,7 @@
 <?php
-require('../libs/header.php');
-require('../libs/constant.php');
-require('../services/connection.php');
+require('./libs/header.php');
+require('./libs/constant.php');
+require('./services/connection.php');
 header("Access-Control-Allow-Methods: PATCH");
 
 
@@ -31,11 +31,10 @@ if ($serverRequest) {
     $priority = $rawBody['priority'] ?? $existTodo['priority'];
 
     $sql = "UPDATE todos SET title = '$titleTodos', priority = '$priority', is_active = $isActiveTodos WHERE id = $idTodos";
-    
+
     if ($conn->query($sql) === true) {
         echo json_encode(array("id" => $idTodos, "title" => $titleTodos, "is_active" => $isActiveTodos, "message" => "data updated successfully!"));
     } else {
         echo json_encode(array("id" => $idTodos, "title" => $titleTodos, "is_active" => $isActiveTodos, "message" => "failed to patch data"));
     }
 }
-
