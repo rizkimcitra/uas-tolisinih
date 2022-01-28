@@ -3,6 +3,7 @@ import { TodoProp } from '@/redux/reducers/todoReducer'
 
 import Axios from 'axios'
 
+const baseURL = import.meta.env.MODE === 'production' ? import.meta.env.BASE_URL : 'http://localhost/tolisinih/backend'
 export interface PatchPayload {
   id?: number | string
   title?: string
@@ -11,7 +12,7 @@ export interface PatchPayload {
 }
 
 const axios = Axios.create({
-  baseURL: 'http://localhost/tolisinih/backend'
+  baseURL
 })
 
 export const getProfile = async <R>(query: string) => {

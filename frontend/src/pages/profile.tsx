@@ -55,8 +55,7 @@ const ProfilePage = () => {
     syncUser()
   }, [])
 
-
-  if(!profile.name && !profile.username){
+  if (!profile.name && !profile.username) {
     return null
   }
 
@@ -75,7 +74,7 @@ const ProfilePage = () => {
         />
       </figure>
       <div>
-        <h1 className='mb-4 md:mb-8'>Account</h1>
+        <h1 className='mb-4 md:mb-8'>Profile</h1>
         <div className={clsx('flex items-center', 'space-x-2 md:space-x-3')}>
           <span>Name: </span>
           <span>{profile.name}</span>

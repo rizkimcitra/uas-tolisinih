@@ -33,10 +33,15 @@ interface PayloadResult {
   }
 }
 
+interface ErrorProp {
+  isError: boolean
+  message: string
+}
+
 const SignupPage = () => {
   useTheme()
   const [formState, setFormState] = useState<FormStateProp>({} as FormStateProp)
-  const [error, setError] = useState<boolean>(false)
+  const [error, setError] = useState<ErrorProp>({} as ErrorProp)
   const [, setCookie] = useCookies(['token'])
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -46,23 +51,41 @@ const SignupPage = () => {
 
   const handleSubmit = async (e: React.FocusEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (formState.name && formState.username && formState.password) {
-      const res = await doPost<FormState, PayloadResult>('/api/user/register.php', formState)
-      if (res.result.status === 'OK') {
-        setCookie('token', res.result.data.id, { path: '/' })
-        const action = createAction<AuthActionType, PayloadAuthReducer>('SET_USER', {
-          isLoggedIn: true,
-          user_id: res.result.data.id,
-          isLoading: false
-        })
-        dispatch(action)
-        navigate('/', { replace: true })
-      }
-      if (!res.result.status) {
-        setError(true)
-      }
+    if (!formState.name || !formState.username || !formState.password) {
+      setError({
+        isError: true,
+        message: 'please fill up the data to sign up!'
+      })
+      return
     }
+
+    if (formState.password && formState.password.length < 6) {
+      setError({
+        isError: true,
+        message: 'Minimum password length is 6 character!'
+      })
+      return
+    }
+
+    const res = await doPost<FormState, PayloadResult>('/api/user/register.php', formState)
+    if (!res.result.status) {
+      setError({
+        isError: true,
+        message: 'Username has already taken!'
+      })
+      return
+    }
+
+    setCookie('token', res.result.data.id, { path: '/' })
+    const action = createAction<AuthActionType, PayloadAuthReducer>('SET_USER', {
+      isLoggedIn: true,
+      user_id: res.result.data.id,
+      isLoading: false
+    })
+    dispatch(action)
+    navigate('/', { replace: true })
   }
+
   return (
     <div className={clsx('fixed inset-0', 'flex items-center justify-center')}>
       <section
@@ -118,11 +141,7 @@ const SignupPage = () => {
               Login
             </Link>
           </div>
-          {error && (
-            <p className={clsx('text-red-500 dark:text-rose-500')}>
-              User has already registerer, please login to your account
-            </p>
-          )}
+          {error.isError && <p className={clsx('text-red-500 dark:text-rose-400')}>{error.message}</p>}
         </form>
       </section>
     </div>
