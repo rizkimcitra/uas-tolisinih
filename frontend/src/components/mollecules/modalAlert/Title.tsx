@@ -3,7 +3,7 @@ import { RootState } from '@/redux/store'
 import clsx from 'clsx'
 
 const Title = ({ title }: { title: RootState['modal']['selectedTodosTitle'] }) => (
-  <h2>
+  <h2 className='text-center'>
     Are you sure want to delete{' '}
     <span
       className={clsx(

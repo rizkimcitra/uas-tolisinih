@@ -20,6 +20,7 @@ import { batch, useDispatch, useSelector } from 'react-redux'
 const ModalBody = () => {
   const form = useSelector<RootState>((state) => state.form) as RootState['form']
   const modal = useSelector<RootState>((state) => state.modal) as RootState['modal']
+  const auth = useSelector<RootState>((state) => state.auth) as RootState['auth']
   const dispatch = useDispatch()
 
   const handleDropdown = () => {
@@ -60,12 +61,12 @@ const ModalBody = () => {
         })
       } else {
         await doPost('/api/post.php', {
-          user_id: 123456,
+          user_id: auth.user_id,
           title: form.todo,
           priority: form.priority
         })
       }
-      await syncTodo(dispatch)
+      await syncTodo(dispatch, '?userId=' + auth.user_id)
       resetState()
     }
   }

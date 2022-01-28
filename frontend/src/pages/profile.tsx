@@ -1,28 +1,47 @@
 import Button from '@/components/atoms/Button'
 
+import { getProfile } from '@/libs/doFetch'
 import createAction from '@/redux/actions/createAction'
 import { AuthActionType } from '@/redux/constant/action'
 import { PayloadAuthReducer } from '@/redux/reducers/authReducer'
 import { RootState } from '@/redux/store'
 
 import clsx from 'clsx'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { useCookies } from 'react-cookie'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
-const ProfilePage = () => {
-  const auth = useSelector<RootState>((state) => state.auth) as RootState['auth']
-  const authCheck = !auth.isLoggedIn && auth.user_id === null
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
+export interface ProfileProp {
+  id: number
+  username: string
+  name: string
+}
 
-  const removeUser = () => {
-    const action = createAction<AuthActionType, PayloadAuthReducer>('REMOVE_USER', {
-      isLoggedIn: false,
-      user_id: null
-    })
-    dispatch(action)
-  }
+const ProfilePage = () => {
+  const auth = useSelector<RootState>((state) => state.auth) as RootState['auth'],
+    [, , removeCookie] = useCookies(['token']),
+    [profile, setProfile] = useState<ProfileProp>({} as ProfileProp),
+    authCheck = !auth.isLoggedIn && auth.user_id === null,
+    navigate = useNavigate(),
+    dispatch = useDispatch()
+
+  const syncUser = async () => {
+      const res = await getProfile<ProfileProp>('id=' + auth.user_id)
+      setProfile({
+        id: res.id,
+        name: res.name,
+        username: res.username
+      })
+    },
+    removeUser = () => {
+      removeCookie('token')
+      const action = createAction<AuthActionType, PayloadAuthReducer>('REMOVE_USER', {
+        isLoggedIn: false,
+        user_id: null
+      })
+      dispatch(action)
+    }
 
   useEffect(() => {
     if (authCheck) {
@@ -32,33 +51,54 @@ const ProfilePage = () => {
     }
   }, [auth])
 
-  if (authCheck) return null
+  useEffect(() => {
+    syncUser()
+  }, [])
+
+
+  if(!profile.name && !profile.username){
+    return null
+  }
+
   return (
-    <div className='flex flex-col items-center space-y-2 md:space-y-3'>
-      <figure className='w-40 aspect-square relative'>
+    <section
+      className={clsx(
+        'flex flex-col md:flex-row-reverse md:justify-evenly items-center',
+        'w-full space-y-4 md:space-y-0 md:space-x-4'
+      )}
+    >
+      <figure className='w-28 md:w-40 aspect-square relative'>
         <img
-          className='w-full h-full object-contain'
+          className='w-full h-full object-contain rounded-full'
           src='https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=880&q=80'
           alt='avatar'
         />
       </figure>
-      <h1>Name </h1>
-      <h2>About Me</h2>
+      <div>
+        <h1 className='mb-4 md:mb-8'>Account</h1>
+        <div className={clsx('flex items-center', 'space-x-2 md:space-x-3')}>
+          <span>Name: </span>
+          <span>{profile.name}</span>
+        </div>
+        <div className={clsx('flex items-center', 'space-x-2 md:space-x-3')}>
+          <span>Username: </span>
+          <span>{profile.username}</span>
+        </div>
 
-      <Button
-        onClick={removeUser}
-        className={clsx(
-          'accessible flex items-center justify-center h-10 md:h-12',
-          'px-4 md:px-8 rounded',
-          'border border-transparent focus-visible:ring-red-500 focus-visible:dark:ring-rose-500',
-          'bg-red-100 text-red-700 font-medium',
-          'hover:bg-red-500 hover:text-white dark:hover:bg-rose-900/50 dark:hover:text-rose-100',
-          'dark:border-rose-500 dark:text-rose-500 dark:bg-neutral-800'
-        )}
-      >
-        Logout
-      </Button>
-    </div>
+        <Button
+          onClick={removeUser}
+          className={clsx(
+            'inline-flex items-center justify-center h-8 md:h-10',
+            'px-2 md:px-6 rounded mt-4 md:mt-8',
+            'border border-transparent focus-visible:ring-red-500 focus-visible:dark:ring-rose-500',
+            'bg-red-100 text-red-700 font-medium',
+            'dark:bg-neutral-800 dark:text-rose-400'
+          )}
+        >
+          Logout
+        </Button>
+      </div>
+    </section>
   )
 }
 

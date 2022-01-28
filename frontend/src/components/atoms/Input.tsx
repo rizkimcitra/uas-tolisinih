@@ -8,7 +8,7 @@ export interface InputProp {
   value?: string | number | Array<string>
   placeholder?: string
   className?: string
-  autoComplete?: 'true' | 'false'
+  autoComplete?: 'on' | 'off'
   autoFocus?: boolean
   disabled?: boolean
   hidden?: boolean
@@ -22,6 +22,7 @@ export type InputType = (props: InputProp) => JSX.Element
 const Input: InputType = ({ ...props }) => {
   return (
     <input
+      {...props}
       className={clsx(
         'h-10 md:h-14 mt-2 md:mt-4 w-full',
         'px-2 md:px-3 border rounded caret-emerald-600 dark:caret-emerald-500',
@@ -31,7 +32,6 @@ const Input: InputType = ({ ...props }) => {
         'placeholder:text-neutral-700 dark:placeholder:text-neutral-300',
         props.className
       )}
-      {...props}
     />
   )
 }

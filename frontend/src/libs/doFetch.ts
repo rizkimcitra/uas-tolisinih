@@ -11,12 +11,21 @@ export interface PatchPayload {
 }
 
 const axios = Axios.create({
-  baseURL: 'http://localhost/api-tolisinih'
+  baseURL: 'http://localhost/tolisinih/backend'
 })
 
-export const doGet = async (path: '/api/get.php') => {
+export const getProfile = async <R>(query: string) => {
   try {
-    const res = await axios.get(path + '?userId=123456')
+    const response = await axios.get(`/api/user/getUser.php?${query}`)
+    return response.data as R
+  } catch (error) {
+    return {} as R
+  }
+}
+
+export const doGet = async (path: '/api/get.php', query?: string) => {
+  try {
+    const res = await axios.get(path + query)
     return {
       result: res.data.result as Array<TodoProp>
     }
@@ -27,18 +36,17 @@ export const doGet = async (path: '/api/get.php') => {
   }
 }
 
-export const doPost = async (
-  path: '/api/post.php',
-  data: { user_id: number; title: string; priority: PayloadFormReducer['priority'] }
-) => {
+type DoPostPath = '/api/post.php' | '/api/user/register.php' | '/api/user/signin.php'
+
+export const doPost = async <T, P>(path: DoPostPath, data: T) => {
   try {
-    const res = await axios.post(path, data)
+    const res = await axios.post<P>(path, data)
     return {
       result: res.data
     }
   } catch (error) {
     return {
-      result: []
+      result: [] as unknown as P
     }
   }
 }

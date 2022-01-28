@@ -4,6 +4,7 @@ import { Route, Routes } from 'react-router-dom'
 const IndexPage = lazy(() => import('@/pages/index'))
 const Profile = lazy(() => import('@/pages/profile'))
 const SigninPage = lazy(() => import('@/pages/signin'))
+const SignupPage = lazy(() => import('@/pages/signup'))
 
 const MyRoutes = () => {
   return (
@@ -31,6 +32,15 @@ const MyRoutes = () => {
         element={
           <Suspense fallback={null}>
             <SigninPage />
+          </Suspense>
+        }
+      />
+
+      <Route
+        path='/signup'
+        element={
+          <Suspense fallback={null}>
+            <SignupPage />
           </Suspense>
         }
       />

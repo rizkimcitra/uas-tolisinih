@@ -19,6 +19,7 @@ import { batch, useDispatch, useSelector } from 'react-redux'
 
 const Alert = () => {
   const modal = useSelector<RootState>((state) => state.modal) as RootState['modal']
+  const auth = useSelector<RootState>((state) => state.auth) as RootState['auth']
   const dispatch = useDispatch()
 
   const closeModal = () => {
@@ -41,7 +42,7 @@ const Alert = () => {
 
   const handleDelete = async () => {
     await doDelete('/api/delete.php', modal.selectedTodosId as number)
-    await syncTodo(dispatch)
+    await syncTodo(dispatch, `?userId=${auth.user_id}`)
     closeModal()
   }
 

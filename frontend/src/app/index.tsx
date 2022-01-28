@@ -14,13 +14,15 @@ import clsx from 'clsx'
 import { AnimatePresence } from 'framer-motion'
 import { useEffect } from 'react'
 import { batch, useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 const App = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const modal = useSelector<RootState>((state) => state.modal) as RootState['modal']
   const auth = useSelector<RootState>((state) => state.auth) as RootState['auth']
+
+  const { pathname } = useLocation()
 
   const handleClick = () => {
     const modalAction = createAction<ModalActionType, PayloadModalReducer>('SET_MODAL', {
@@ -42,7 +44,7 @@ const App = () => {
   }
 
   useEffect(() => {
-    if (!auth.isLoggedIn && auth.user_id === null) {
+    if (!auth.isLoggedIn && auth.user_id === null && pathname !== '/signup') {
       navigate('/signin', {
         replace: true
       })

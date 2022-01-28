@@ -2,15 +2,16 @@ import Button from '@/components/atoms/Button'
 import Input from '@/components/atoms/Input'
 
 import useTheme from '@/hooks/useTheme'
+import { doPost } from '@/libs/doFetch'
 import createAction from '@/redux/actions/createAction'
 import { AuthActionType } from '@/redux/constant/action'
 import { PayloadAuthReducer } from '@/redux/reducers/authReducer'
-import { RootState } from '@/redux/store'
 
 import clsx from 'clsx'
 import React, { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useCookies } from 'react-cookie'
+import { useDispatch } from 'react-redux'
+import { Link, useNavigate } from 'react-router-dom'
 
 interface FormState {
   username: string
@@ -21,35 +22,76 @@ interface FormStateProp extends FormState {
   [x: string]: string
 }
 
+export interface PayloadData {
+  username: string
+  password: string
+}
+
+export interface PayloadResult {
+  id: number
+  name: string
+  username: string
+  message: string
+  status: boolean
+}
+
 const SigninPage = () => {
   useTheme()
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
-  const [formState, setFormState] = useState<FormStateProp>({} as FormStateProp)
-  const auth = useSelector<RootState>((state) => state.auth) as RootState['auth']
+  const navigate = useNavigate(),
+    dispatch = useDispatch(),
+    [formState, setFormState] = useState<FormStateProp>({} as FormStateProp),
+    [error, setError] = useState<boolean>(false),
+    [cookies, setCookie] = useCookies(['token'])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormState({ ...formState, [e.target.name]: e.target.value })
+    if (error) setError(false)
   }
 
-  const handleSubmit = (e: React.FocusEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FocusEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (formState?.username === 'rizkimcitra' && formState?.password === 'KdhFamz-00') {
-      const action = createAction<AuthActionType, PayloadAuthReducer>('SET_USER', {
-        isLoggedIn: true,
-        user_id: 123456,
-        isLoading: false
-      })
-      dispatch(action)
-      navigate('/', {
-        replace: true
-      })
-      return
+    if (formState?.username.length > 0 && formState?.password.length > 0) {
+      const data = {
+          username: formState.username,
+          password: formState.password
+        },
+        res = await doPost<PayloadData, PayloadResult>('/api/user/signin.php', data)
+
+      if (!res.result.status) {
+        setError(true)
+        return
+      }
+
+      if (res.result.status) {
+        const action = createAction<AuthActionType, PayloadAuthReducer>('SET_USER', {
+          isLoggedIn: res.result.status,
+          user_id: res.result.id,
+          isLoading: false
+        })
+
+        setCookie('token', res.result.id, {
+          path: '/',
+          expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7)
+        })
+
+        dispatch(action)
+        navigate('/', {
+          replace: true
+        })
+        return
+      }
     }
   }
 
   useEffect(() => {
-    if (auth.isLoggedIn) {
+    if (cookies.token) {
+      const action = createAction<AuthActionType, PayloadAuthReducer>('SET_USER', {
+        isLoggedIn: true,
+        user_id: +cookies.token,
+        isLoading: false
+      })
+
+      dispatch(action)
       navigate('/', {
         replace: true
       })
@@ -67,11 +109,16 @@ const SigninPage = () => {
           'bg-white dark:bg-neutral-800'
         )}
       >
-        <h1 className='text-center mb-6 md:mb-10'>Signin to your account</h1>
+        <h1 className='text-center mb-6 md:mb-10'>
+          Login to{' '}
+          <span className={clsx('text-transparent bg-clip-text bg-gradient-to-r', 'from-green-500 to-emerald-500')}>
+            Tolisinih
+          </span>
+        </h1>
         <form className={clsx('flex flex-col space-y-4 md:space-y-8')} onSubmit={handleSubmit}>
           <div className='w-full flex flex-col space-y-1 md:space-y-2'>
             <label htmlFor='username'>username</label>
-            <Input type='text' id='username' name='username' onChange={handleChange} />
+            <Input type='text' id='username' name='username' onChange={handleChange} autoComplete='off' />
           </div>
           <div className='w-full flex flex-col space-y-1 md:space-y-2'>
             <label htmlFor='password'>password</label>
@@ -87,10 +134,11 @@ const SigninPage = () => {
                 'dark:border-emerald-500 dark:bg-neutral-800 dark:text-emerald-500'
               )}
             >
-              Signin
+              Sign in
             </Button>
             <span>or</span>
-            <Button
+            <Link
+              to='/signup'
               className={clsx(
                 'accessible inline-flex items-center justify-center h-10 md:h-12',
                 'border border-transparent hover:bg-current dark:hover:bg-neutral-800',
@@ -99,8 +147,9 @@ const SigninPage = () => {
               )}
             >
               Create an account
-            </Button>
+            </Link>
           </div>
+          {error && <p className={clsx('text-red-500 dark:text-rose-500')}>Incorrect username or password!</p>}
         </form>
       </section>
     </div>

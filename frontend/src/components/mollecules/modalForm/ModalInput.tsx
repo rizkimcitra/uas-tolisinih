@@ -17,6 +17,7 @@ interface ModalInputProp {
 const ModalInput = ({ onSubmit }: ModalInputProp) => {
   const form = useSelector<RootState>((state) => state.form) as RootState['form']
   const modal = useSelector<RootState>((state) => state.modal) as RootState['modal']
+  const auth = useSelector<RootState>((state) => state.auth) as RootState['auth']
   const dispatch = useDispatch()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,7 +29,8 @@ const ModalInput = ({ onSubmit }: ModalInputProp) => {
     dispatch(action)
   }
 
-  const resetState = () => {
+  // reset form
+  const resetState = (): void => {
     const modalAction = createAction<ModalActionType, PayloadModalReducer>('SET_MODAL', {
       modalForm: false,
       modalIsOpen: false,
@@ -63,7 +65,7 @@ const ModalInput = ({ onSubmit }: ModalInputProp) => {
       } else {
         await onSubmit()
       }
-      await syncTodo(dispatch)
+      await syncTodo(dispatch, '?userId=' + auth.user_id)
     }
   }
 

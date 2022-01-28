@@ -14,10 +14,12 @@ import EditButton from './Todo/EditButton'
 
 import clsx from 'clsx'
 import { useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '@/redux/store'
 
 const Todo = ({ id, title, created_at, is_active, priority }: TodoProp) => {
   const [checked, setChecked] = useState<boolean>(is_active ? true : false)
+  const auth = useSelector<RootState>(state => state.auth) as RootState['auth']
   const date = formatDate(created_at as string)
   const dispatch = useDispatch()
   const priorityColor = indicator(priority)
@@ -36,7 +38,7 @@ const Todo = ({ id, title, created_at, is_active, priority }: TodoProp) => {
   const handleChange = async () => {
     setChecked(!checked)
     await doPatch('/api/patch.php', { id, title, is_active: checked ? 0 : 1 })
-    await syncTodo(dispatch)
+    await syncTodo(dispatch, '?userId=' + auth.user_id)
   }
 
   return (

@@ -18,7 +18,7 @@ const IndexPage = () => {
   const navigate = useNavigate()
 
   const getData = async (): Promise<void> => {
-    const res = await doGet('/api/get.php')
+    const res = await doGet('/api/get.php', '?userId=' + auth.user_id)
     const action = createAction<TodoActionType, PayloadTodoReducer>('SET_TODOS', {
       todos: res.result
     })
@@ -37,7 +37,7 @@ const IndexPage = () => {
 
   if (!auth.isLoggedIn) return null
 
-  if (todos.length > 0) {
+  if (todos && todos.length > 0) {
     return (
       <div className='flex flex-col space-y-2 md:space-y-4 pb-4 md:pb-6'>
         {todos.map((todo) => (
