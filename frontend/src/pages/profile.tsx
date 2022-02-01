@@ -62,16 +62,18 @@ const ProfilePage = () => {
   return (
     <section
       className={clsx(
-        'flex flex-col md:flex-row-reverse md:justify-evenly items-center',
+        'flex flex-col md:flex-row-reverse md:justify-between items-center',
         'w-full space-y-4 md:space-y-0 md:space-x-4'
       )}
     >
       <figure className='w-28 md:w-40 aspect-square relative'>
-        <img
-          className='w-full h-full object-contain rounded-full'
-          src='https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=880&q=80'
-          alt='avatar'
-        />
+        {profile.name && (
+          <img
+            className='w-full h-full object-contain rounded-full'
+            src={`https://ui-avatars.com/api/?name=${profile.name}&background=random`}
+            alt='avatar'
+          />
+        )}
       </figure>
       <div>
         <h1 className='mb-4 md:mb-8'>Profile</h1>
