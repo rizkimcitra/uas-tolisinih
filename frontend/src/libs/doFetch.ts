@@ -24,7 +24,7 @@ export const getProfile = async <R>(query: string) => {
   }
 }
 
-export const doGet = async (path: '/api/get.php', query?: string) => {
+export const doGet = async  (path: '/api/get.php', query?: string) => {
   try {
     const res = await axios.get(path + query)
     return {
