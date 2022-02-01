@@ -1,8 +1,8 @@
 <?php
-require('../libs/header.php');
-require('../services/connection.php');
-require('../libs/constant.php');
-require('../libs/randomNum.php');
+require('../../libs/header.php');
+require('../../services/connection.php');
+require('../../libs/constant.php');
+require('../../libs/randomNum.php');
 header("Access-Control-Allow-Methods: POST");
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
