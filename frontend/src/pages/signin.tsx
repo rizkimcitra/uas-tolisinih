@@ -1,5 +1,6 @@
 import Button from '@/components/atoms/Button'
 import Input from '@/components/atoms/Input'
+import { EyeClosed, EyeOpen } from '@/components/atoms/icons/Eye'
 
 import useTheme from '@/hooks/useTheme'
 import { doPost } from '@/libs/doFetch'
@@ -41,6 +42,7 @@ const SigninPage = () => {
     dispatch = useDispatch(),
     [formState, setFormState] = useState<FormStateProp>({} as FormStateProp),
     [error, setError] = useState<boolean>(false),
+    [passwordIsVisible, setPasswordIsVisible] = useState<boolean>(false),
     [cookies, setCookie] = useCookies(['token'])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -120,9 +122,26 @@ const SigninPage = () => {
             <label htmlFor='username'>username</label>
             <Input type='text' id='username' name='username' onChange={handleChange} autoComplete='off' />
           </div>
-          <div className='w-full flex flex-col space-y-1 md:space-y-2'>
+          <div className='relative w-full flex flex-col space-y-1 md:space-y-2'>
             <label htmlFor='password'>password</label>
-            <Input type='password' id='password' name='password' onChange={handleChange} />
+            <Input
+              type={passwordIsVisible ? 'text' : 'password'}
+              id='password'
+              name='password'
+              onChange={handleChange}
+              className={clsx('pr-8 md:pr-12')}
+            />
+            <span
+              onClick={() => setPasswordIsVisible((prevState) => !prevState)}
+              title='show password'
+              className={clsx(
+                'absolute right-3 md:right-4',
+                'top-[63%] md:top-[58%] -translate-y-1/2',
+                'cursor-pointer'
+              )}
+            >
+              {passwordIsVisible ? <EyeOpen /> : <EyeClosed />}
+            </span>
           </div>
           <div className={clsx('flex items-center space-x-2 md:space-x-3')}>
             <Button

@@ -1,5 +1,6 @@
 import Button from '@/components/atoms/Button'
 import Input from '@/components/atoms/Input'
+import { EyeClosed, EyeOpen } from '@/components/atoms/icons/Eye'
 
 import useTheme from '@/hooks/useTheme'
 import { doPost } from '@/libs/doFetch'
@@ -40,11 +41,12 @@ interface ErrorProp {
 
 const SignupPage = () => {
   useTheme()
-  const [formState, setFormState] = useState<FormStateProp>({} as FormStateProp)
-  const [error, setError] = useState<ErrorProp>({} as ErrorProp)
-  const [, setCookie] = useCookies(['token'])
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const [formState, setFormState] = useState<FormStateProp>({} as FormStateProp),
+    [error, setError] = useState<ErrorProp>({} as ErrorProp),
+    [passwordIsVisible, setPasswordIsVisible] = useState<boolean>(false),
+    [, setCookie] = useCookies(['token']),
+    navigate = useNavigate(),
+    dispatch = useDispatch()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setFormState({ ...formState, [e.target.name]: e.target.value })
@@ -112,9 +114,25 @@ const SignupPage = () => {
             <label htmlFor='username'>Username</label>
             <Input type='text' id='username' name='username' onChange={handleChange} autoComplete='off' />
           </div>
-          <div className='w-full flex flex-col space-y-1 md:space-y-2'>
+          <div className='relative w-full flex flex-col space-y-1 md:space-y-2'>
             <label htmlFor='password'>Password</label>
-            <Input type='password' id='password' name='password' onChange={handleChange} />
+            <Input
+              type={passwordIsVisible ? 'text' : 'password'}
+              id='password'
+              name='password'
+              onChange={handleChange}
+            />
+            <span
+              onClick={() => setPasswordIsVisible((prevState) => !prevState)}
+              title='show password'
+              className={clsx(
+                'absolute right-3 md:right-4',
+                'top-[63%] md:top-[58%] -translate-y-1/2',
+                'cursor-pointer'
+              )}
+            >
+              {passwordIsVisible ? <EyeOpen /> : <EyeClosed />}
+            </span>
           </div>
           <div className={clsx('flex items-center space-x-2 md:space-x-3')}>
             <Button
